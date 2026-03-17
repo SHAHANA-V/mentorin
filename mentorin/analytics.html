@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mentorin | Analytics</title>
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <h2 class="logo">Mentorin</h2>
+
+    <ul class="menu">
+      <li><a href="dashboard.html">🏠 Dashboard</a></li>
+      <li><a href="chat.html">💬 Chat</a></li>
+      <li class="active"><a href="analytics.html">📊 Analytics</a></li>
+      <li><a href="login.html">🚪 Logout</a></li>
+    </ul>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="content">
+
+    <h2>📊 Mentor Trust Analytics</h2>
+    <p class="subtitle">
+      Real-time trust score comparison of mentors
+    </p>
+
+    <!-- GRAPH CARD -->
+    <div class="chart-card">
+      <canvas id="mentorTrustChart" height="300"></canvas>
+    </div>
+
+  </main>
+
+</div>
+
+<script src="js/analytics.js"></script>
+</body>
+</html>
+

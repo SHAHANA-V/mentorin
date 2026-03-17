@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mentorin | Register</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="auth-bg">
+
+  <div class="auth-card">
+
+    <!-- HEADER -->
+    <h2>Create Account 🚀</h2>
+    <p style="text-align:center; color:#6b7280; margin-bottom:25px;">
+      Join Mentorin and start your trusted mentorship journey
+    </p>
+
+    <!-- FULL NAME -->
+    <input type="text" id="name" placeholder="Full Name" required>
+
+    <!-- EMAIL -->
+    <input type="email" id="email" placeholder="Email Address" required>
+
+    <!-- ROLE -->
+    <select id="role" required>
+      <option value="">Select your role</option>
+      <option value="student">Student</option>
+      <option value="mentor">Mentor</option>
+    </select>
+
+    <!-- PASSWORD -->
+    <input type="password" id="password" placeholder="Create Password" required>
+    <div class="password-strength">
+  <span id="strengthText">Password strength</span>
+  <div class="strength-bar">
+    <div id="strengthFill"></div>
+  </div>
+</div>
+
+    <!-- CONFIRM PASSWORD -->
+   <div class="input-group">
+  
+  <input 
+    type="password" 
+    id="confirmPassword" 
+    onkeyup="checkPassword()"
+    placeholder="Re-enter password" 
+    required
+  >
+  <small id="confirmError" style="color:#ef4444; display:none;">
+    Passwords do not match
+  </small>
+</div>
+
+    <!-- TERMS -->
+   <!-- TERMS -->
+<div class="terms">
+  <input type="checkbox" id="terms" required>
+  <label for="terms">
+    I agree to the <a href="#">Terms & Privacy</a>
+  </label>
+</div>
+
+
+    <!-- REGISTER BUTTON -->
+    <button class="btn" onclick="register()">Create Account</button>
+
+    <!-- DIVIDER -->
+    <div style="text-align:center; margin:20px 0; color:#9ca3af;">
+      ── or ──
+    </div>
+
+    <!-- SOCIAL -->
+    <button class="btn" style="background:#111827;">
+      Sign up with Google
+    </button>
+
+    <!-- SWITCH -->
+    <p class="switch">
+      Already have an account?
+      <a href="login.html">Login</a>
+    </p>
+
+  </div>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mentorin | Login</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="auth-bg">
+
+  <div class="auth-card">
+
+    <!-- LOGO / BRAND -->
+    <h2>Welcome Back 👋</h2>
+    <p style="text-align:center; color:#6b7280; margin-bottom:25px;">
+      Login to continue your mentorship journey
+    </p>
+
+    <!-- EMAIL -->
+    <input type="email" id="email" placeholder="Email address" required>
+
+    <!-- PASSWORD -->
+    <input type="password" id="password" placeholder="Password" required>
+
+    <!-- EXTRA OPTIONS -->
+    <div style="display:flex; justify-content:space-between; align-items:center; font-size:14px; margin-bottom:15px;">
+      <label style="display:flex; gap:6px; align-items:center;">
+        <input type="checkbox"> Remember me
+      </label>
+      <a href="#" style="color:#2563eb; text-decoration:none;">Forgot?</a>
+    </div>
+
+    <!-- LOGIN BUTTON -->
+    <button class="btn" onclick="login()">Login</button>
+
+    <!-- DIVIDER -->
+    <div style="text-align:center; margin:20px 0; color:#9ca3af;">
+      ── or ──
+    </div>
+
+    <!-- SOCIAL LOGIN (UI ONLY) -->
+    <button class="btn" style="background:#111827;">
+      Continue with Google
+    </button>
+
+    <!-- SWITCH -->
+    <p class="switch">
+      New to Mentorin?
+      <a href="register.html">Create an account</a>
+    </p>
+
+  </div>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
+

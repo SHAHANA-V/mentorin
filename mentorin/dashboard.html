@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mentorin | Dashboard</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="logo">Mentorin</div>
+
+    <div class="profile">
+      <img src="https://i.pravatar.cc/120?img=5" class="profile-pic" alt="user">
+
+      <h4 id="userName">Student</h4>
+      <span>Trust Member</span>
+    </div>
+
+    <ul class="menu">
+      <li class="active">🏠 Dashboard</li>
+      
+      <li class="menu-item"><a href= "chat.html">💬 Chat</a></li>
+      <li class="menu-item"><a href="analytics.html"> 📊 Analytics</a></li>
+      <li>⚙ Settings</li>
+      <li class="menu-item"><a href="login.html">🚪 Logout</a></li>
+    </ul>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- TOP BAR -->
+    <div class="topbar">
+      <h2>Discover Trusted Mentors</h2>
+      <img src="https://i.pravatar.cc/40" alt="profile">
+    </div>
+
+    <!-- HERO -->
+    <section class="welcome card">
+      <div>
+        <h1>Your mentorship journey starts here ✨</h1>
+        <p>Connect only with <b>AI-verified mentors</b> for safe & ethical guidance.</p>
+        
+      </div>
+    </section>
+
+    <!-- MENTORS -->
+    <section style="margin-top:40px;">
+      <h3 style="margin-bottom:20px;">Top Trusted Mentors</h3>
+
+      <div class="cards">
+
+        <!-- CARD 1 -->
+        <div class="card mentor-card">
+          <img src="https://i.pravatar.cc/80?img=12" class="mentor-img">
+          <h4>Ravi Kumar</h4>
+          <p>Senior Software Engineer</p>
+
+          <span class="trust-badge trust-good">Trust 82</span>
+          <span class="badge verified">✔ Verified</span>
+
+         <a href="profile.html" class="btn">View Profile</a>
+
+        </div>
+
+        <!-- CARD 2 -->
+        <div class="card mentor-card">
+          <img src="https://i.pravatar.cc/80?img=32" class="mentor-img">
+          <h4>Anita Sharma</h4>
+          <p>Data Scientist</p>
+
+          <span class="trust-badge trust-medium">Trust 55</span>
+          <span class="badge warning">⚠ Warning</span>
+
+          <button class="btn">View Profile</button>
+        </div>
+
+        <!-- CARD 3 -->
+        <div class="card mentor-card">
+          <img src="https://i.pravatar.cc/80?img=45" class="mentor-img">
+          <h4>Rahul Verma</h4>
+          <p>Product Manager</p>
+
+          <span class="trust-badge trust-good">Trust 90</span>
+          <span class="badge verified">✔ Verified</span>
+
+          <button class="btn">View Profile</button>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script src="js/dashboard.js"></script>
+</body>
+</html>
