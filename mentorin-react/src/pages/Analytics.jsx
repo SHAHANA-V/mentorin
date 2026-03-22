@@ -25,7 +25,7 @@ const Analytics = () => {
 
   // 🔥 LOAD DATA FROM BACKEND
   const loadAnalytics = () => {
-    fetch("https://mentorin-backend.onrender.com/analytics/all")
+    fetch("http://127.0.0.1:5000/analytics/all")
       .then(res => res.json())
       .then(data => {
         setMentors(data);
@@ -46,12 +46,13 @@ const Analytics = () => {
     labels: mentors.map(m => m.name),
     datasets: [{
       label: "Trust Score",
-      data: mentors.map(m => m.trust_score),
-      backgroundColor: mentors.map(m => 
-        m.trust_score >= 70 ? "#22c55e" :
-        m.trust_score >= 40 ? "#facc15" :
-        "#ef4444"
-      ),
+      data: mentors.map(m => m.trustScore || m.trust_score),
+      backgroundColor: mentors.map(m => {
+        const score = m.trustScore || m.trust_score;
+        return score >= 70 ? "#22c55e" :
+               score >= 40 ? "#facc15" :
+               "#ef4444";
+      }),
       borderRadius: 8,
       barThickness: 60,      // 🔥 THIS FIXES FAT BAR
       maxBarThickness: 70

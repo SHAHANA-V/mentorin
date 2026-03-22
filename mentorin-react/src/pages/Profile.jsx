@@ -1,8 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 const Profile = () => {
   const { id } = useParams();
+  const [showToast, setShowToast] = useState(false);
+
+  const handleRequestClick = () => {
+    setShowToast(true);
+    setTimeout(() => {
+      setShowToast(false);
+    }, 3500);
+  };
 
   const mentorData = {
     1: {
@@ -77,9 +85,14 @@ const Profile = () => {
             <h2>{mentor.name}</h2>
             <p className="domain">{mentor.role}</p>
 
-            <span className={`trust-badge ${mentor.trustScore >= 70 ? 'trust-good' : 'trust-medium'}`}>
-              Trust Score: {mentor.trustScore}
-            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+              <span className={`trust-badge ${mentor.trustScore >= 70 ? 'trust-good' : 'trust-medium'}`}>
+                Trust Score: {mentor.trustScore}
+              </span>
+              <div style={{ width: '150px', height: '8px', background: '#e2e8f0', borderRadius: '4px', overflow: 'hidden' }}>
+                <div style={{ width: `${mentor.trustScore}%`, height: '100%', background: mentor.trustScore >= 70 ? '#10b981' : '#f59e0b', transition: 'width 1s ease-in-out' }}></div>
+              </div>
+            </div>
             {mentor.verified && (
               <span className="badge verified">✔ Verified Mentor</span>
             )}
@@ -128,12 +141,23 @@ const Profile = () => {
             <a href="/chat" className="btn" style={{marginTop: "20px"}}>
               Start Chat
             </a>
-            <button className="btn" style={{background: "#0ea5e9", marginTop: "10px"}}>
+            <button className="btn" style={{background: "#0ea5e9", marginTop: "10px", width: '100%'}} onClick={handleRequestClick}>
               Request Mentorship
             </button>
           </div>
         </div>
       </main>
+
+      {/* TOAST NOTIFICATION */}
+      {showToast && (
+        <div className="toast-notification fade-in-up">
+          <div className="toast-icon">✅</div>
+          <div className="toast-content">
+            <h4>Success</h4>
+            <p>Mentorship request sent successfully.</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

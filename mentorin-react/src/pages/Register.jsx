@@ -7,7 +7,12 @@ const Register = () => {
     email: '',
     role: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    skills: '',
+    experience: '',
+    domain: '',
+    bio: '',
+    linkedin: ''
   });
   const [error, setError] = useState('');
   const [passwordStrength, setPasswordStrength] = useState({
@@ -75,17 +80,28 @@ const Register = () => {
     }
 
     try {
-      const res = await fetch("https://mentorin-backend.onrender.com/register", {
+      const payload = {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        role: formData.role
+      };
+
+      if (formData.role === 'mentor') {
+        payload.skills = formData.skills;
+        payload.experience = formData.experience;
+        payload.domain = formData.domain;
+        payload.bio = formData.bio;
+        payload.linkedin = formData.linkedin;
+        payload.trustScore = 60; // Default trust score
+      }
+
+      const res = await fetch("http://127.0.0.1:5000/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
-          role: formData.role
-        })
+        body: JSON.stringify(payload)
       });
 
       const data = await res.json();
@@ -146,6 +162,52 @@ const Register = () => {
           <option value="student">Student</option>
           <option value="mentor">Mentor</option>
         </select>
+
+        {/* DYNAMIC MENTOR FIELDS */}
+        {formData.role === 'mentor' && (
+          <div className="mentor-fields fade-in">
+            <input 
+              type="text" 
+              name="domain"
+              value={formData.domain}
+              onChange={handleInputChange}
+              placeholder="Domain (e.g., Software Engineering)" 
+              required 
+            />
+            <input 
+              type="text" 
+              name="skills"
+              value={formData.skills}
+              onChange={handleInputChange}
+              placeholder="Skills / Expertise (comma separated)" 
+              required 
+            />
+            <input 
+              type="text" 
+              name="experience"
+              value={formData.experience}
+              onChange={handleInputChange}
+              placeholder="Years of Experience (e.g., 5+ Years)" 
+              required 
+            />
+            <textarea
+              name="bio"
+              value={formData.bio}
+              onChange={handleInputChange}
+              placeholder="Short Bio"
+              className="form-textarea"
+              required
+            ></textarea>
+            <input 
+              type="url" 
+              name="linkedin"
+              value={formData.linkedin}
+              onChange={handleInputChange}
+              placeholder="LinkedIn / Portfolio URL" 
+              required 
+            />
+          </div>
+        )}
 
         {/* PASSWORD */}
         <input 

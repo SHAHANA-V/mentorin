@@ -7,6 +7,8 @@ const Chat = () => {
   ]);
   const [inputMessage, setInputMessage] = useState('');
   const [user, setUser] = useState(null);
+  const [isMockActive, setIsMockActive] = useState(false);
+  const [simulationReport, setSimulationReport] = useState(null);
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
@@ -15,6 +17,26 @@ const Chat = () => {
       setUser(JSON.parse(userData));
     }
   }, []);
+
+  // 🤖 SIMULATION POLLING ENGINE
+  useEffect(() => {
+    let interval;
+    if (user && user.role === 'mentor') {
+      interval = setInterval(async () => {
+        try {
+          const res = await fetch(`http://127.0.0.1:5000/chat/mock_sync/${user.id}`);
+          if (res.ok) {
+            const data = await res.json();
+            setIsMockActive(data.mockActive);
+            if (data.message) {
+              setMessages(prev => [...prev, { text: data.message, type: "received mock" }]);
+            }
+          }
+        } catch(err) { /* ignore error on polling loop */ }
+      }, 3000);
+    }
+    return () => clearInterval(interval);
+  }, [user]);
 
   useEffect(() => {
     scrollToBottom();
@@ -28,8 +50,39 @@ const Chat = () => {
     const msg = inputMessage.trim();
     if (!msg) return;
 
+    // 🤖 IF SIMULATION IS ACTIVE, BYPASS NORMAL CHAT LOGIC
+    if (isMockActive) {
+      try {
+        const res = await fetch("http://127.0.0.1:5000/simulate/reply", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ user_id: user?.id, message: msg })
+        });
+        
+        if (!res.ok) {
+           const errData = await res.json();
+           if (res.status === 400) {
+             alert(`Simulation Error: ${errData.error}. Please ask the Admin to Stop and Re-Start your simulation session!`);
+             setIsMockActive(false);
+             return;
+           }
+           throw new Error("API Failure");
+        }
+        
+        const data = await res.json();
+
+        setMessages(prev => [...prev, { text: msg, type: "sent" }]);
+        setInputMessage("");
+
+        if (data.status === "completed") {
+          setIsMockActive(false);
+          setSimulationReport(data.report);
+        }
+      } catch (err) { alert("Failed to connect to Simulation Engine"); }
+      return;
+    }
+
     try {
-      const res = await fetch("https://mentorin-backend.onrender.com/analyze_chat", {
+      const res = await fetch("http://127.0.0.1:5000/analyze_chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -38,22 +91,43 @@ const Chat = () => {
         })
       });
 
-      if (!res.ok) throw res;
+      if (!res.ok) {
+        if (res.status === 403) {
+          const errData = await res.json();
+          if (errData.status === "blocked") {
+            alert("This mentor has been blocked due to policy violations and sent for admin review.");
+            const blockedUser = { ...user, status: "blocked" };
+            setUser(blockedUser);
+            localStorage.setItem("user", JSON.stringify(blockedUser));
+            return;
+          }
+        }
+        throw res;
+      }
       
       const data = await res.json();
-
-      // 🚫 BLOCKED MESSAGE
-      if (data.severity === "high" || data.severity === "medium") {
-        alert("🚫 This message is not allowed on Mentorin platform");
-        return;
-      }
 
       // ✅ SHOW MESSAGE
       setMessages(prev => [...prev, { text: msg, type: "sent" }]);
       setInputMessage("");
 
+      if (data.warning) {
+        alert("Only professional communication is allowed. This behavior affects trust score.");
+      }
+
+      if (data.blocked) {
+        alert("This mentor has been blocked due to policy violations and sent for admin review.");
+        const blockedUser = { ...user, status: "blocked", trustScore: data.updated_trust_score };
+        setUser(blockedUser);
+        localStorage.setItem("user", JSON.stringify(blockedUser));
+      } else if (data.updated_trust_score !== undefined && user) {
+        const updatedUser = { ...user, trustScore: data.updated_trust_score };
+        setUser(updatedUser);
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+      }
+
     } catch (err) {
-      alert("⚠ Message not allowed or user blocked");
+      alert("⚠ Message failed or user blocked");
     }
   };
 
@@ -69,7 +143,18 @@ const Chat = () => {
       <aside className="chat-sidebar">
         <h3>Messages</h3>
 
-        <div className="chat-user active">
+        {/* MOCK STUDENT NOTIFIER */}
+        {isMockActive && (
+          <div className="chat-user active fade-in-up" style={{background: '#fef2f2', border: '1px solid #fca5a5'}}>
+            <div style={{fontSize: "28px", display:"flex", alignItems:"center"}}>🤖</div>
+            <div>
+              <h4 style={{color: '#991b1b'}}>Aarav (Student)</h4>
+              <span style={{color: '#dc2626'}}>Test Mode Active</span>
+            </div>
+          </div>
+        )}
+
+        <div className={`chat-user ${!isMockActive ? 'active' : ''}`}>
           <img src="https://i.pravatar.cc/40?img=12" />
           <div>
             <h4>Ravi Kumar</h4>
@@ -91,13 +176,25 @@ const Chat = () => {
         {/* HEADER */}
         <div className="chat-header">
           <div className="chat-header-user">
-            <img src="https://i.pravatar.cc/45?img=12" />
-            <div>
-              <h4>Ravi Kumar</h4>
-              <span>Senior Software Engineer</span>
-            </div>
+            {isMockActive ? (
+              <>
+                <div style={{fontSize: "34px"}}>🤖</div>
+                <div>
+                  <h4>Aarav (Student)</h4>
+                  <span style={{color: '#ef4444', fontWeight: 'bold'}}>System Administrator Test</span>
+                </div>
+              </>
+            ) : (
+              <>
+                <img src="https://i.pravatar.cc/45?img=12" />
+                <div>
+                  <h4>Ravi Kumar</h4>
+                  <span>Senior Software Engineer</span>
+                </div>
+              </>
+            )}
           </div>
-          <span className="badge verified">✔ Verified</span>
+          <span className={`badge ${isMockActive ? 'warning' : 'verified'}`}>{isMockActive ? '⚠ Test Mode' : '✔ Verified'}</span>
         </div>
 
         {/* MESSAGES */}
@@ -111,15 +208,50 @@ const Chat = () => {
         </div>
 
         {/* INPUT */}
-        <div className="chat-input">
+        <div className="chat-input" style={{position: 'relative'}}>
+          
+          {/* SIMULATION REPORT OVERLAY MODAL */}
+          {simulationReport && (
+            <div className="modal-overlay" style={{position: 'fixed', inset: 0, zIndex: 9999}}>
+              <div className="modal-content fade-in-up" style={{textAlign:'center', background:'white', padding:'40px', borderRadius:'15px', color:'#1e293b'}}>
+                <h2 style={{color: '#3b82f6', marginBottom:'10px'}}>Simulation Completed 🎉</h2>
+                <p style={{color: '#64748b', marginBottom:'25px'}}>The multi-turn AI script has finished. Your responses have been recorded and scored.</p>
+                
+                <div style={{background:'#f8fafc', padding:'20px', borderRadius:'10px', display:'flex', gap:'30px', justifyContent:'center'}}>
+                  <div>
+                    <span style={{fontSize:'32px', fontWeight:'bold', display:'block'}}>{simulationReport.professionalism}/10</span>
+                    <span style={{fontSize:'13px', color:'#64748b', textTransform:'uppercase'}}>Professionalism</span>
+                  </div>
+                  <div style={{borderLeft:'1px solid #cbd5e1'}}></div>
+                  <div>
+                    <span style={{fontSize:'32px', fontWeight:'bold', display:'block'}}>{simulationReport.helpfulness}/10</span>
+                    <span style={{fontSize:'13px', color:'#64748b', textTransform:'uppercase'}}>Helpfulness</span>
+                  </div>
+                </div>
+                
+                <div style={{marginTop:'30px'}}>
+                  <span style={{fontSize:'16px', fontWeight:'600'}}>Final AI Integrity Score: </span>
+                  <span style={{fontSize:'18px', color: simulationReport.finalScore >= 7 ? '#10b981' : '#f59e0b', fontWeight:'bold'}}>{simulationReport.finalScore} / 10</span>
+                </div>
+                
+                <button className="btn primary" style={{marginTop:'30px', width:'100%'}} onClick={() => setSimulationReport(null)}>Acknowledge & Return</button>
+              </div>
+            </div>
+          )}
+
           <input 
             id="chatInput"
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="Type a professional message..."
+            placeholder={user?.status === "blocked" ? "Chat is disabled due to policy violations" : "Type a professional message..."}
+            disabled={user?.status === "blocked"}
           />
-          <button onClick={sendMessage}>Send</button>
+          <button 
+             onClick={sendMessage}
+             disabled={user?.status === "blocked"}
+             style={{ opacity: user?.status === "blocked" ? 0.5 : 1, cursor: user?.status === "blocked" ? "not-allowed" : "pointer" }}
+          >Send</button>
         </div>
       </main>
     </div>

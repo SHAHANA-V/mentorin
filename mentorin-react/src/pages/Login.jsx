@@ -12,7 +12,7 @@ const Login = () => {
     setError('');
 
     try {
-      const res = await fetch("https://mentorin-backend.onrender.com/login", {
+      const res = await fetch("http://127.0.0.1:5000/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -33,12 +33,39 @@ const Login = () => {
       // Save user to localStorage
       localStorage.setItem("user", JSON.stringify(data.user));
 
-      // Go to dashboard
-      navigate("/dashboard");
+      // Go to dashboard based on role
+      if (data.user.role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/dashboard");
+      }
 
     } catch (err) {
       setError("Server not reachable");
       console.error(err);
+    }
+  };
+
+  const handleAdminQuickLogin = async (e) => {
+    e.preventDefault();
+    setError('');
+
+    try {
+      const res = await fetch("http://127.0.0.1:5000/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: "admin@mentorin.com", password: "admin" })
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.message);
+        return;
+      }
+      localStorage.setItem("user", JSON.stringify(data.user));
+      navigate("/admin");
+    } catch (err) {
+      setError("Server not reachable");
     }
   };
 
@@ -88,8 +115,13 @@ const Login = () => {
         </div>
 
         {/* SOCIAL LOGIN (UI ONLY) */}
-        <button className="btn" style={{background: "#111827"}}>
+        <button className="btn" style={{background: "#111827", marginBottom: "10px"}}>
           Continue with Google
+        </button>
+
+        {/* QUICK ADMIN LOGIN */}
+        <button className="btn" style={{background: "#1e3a8a"}} onClick={handleAdminQuickLogin}>
+          Login as Admin (Shortcut)
         </button>
 
         {/* SWITCH */}

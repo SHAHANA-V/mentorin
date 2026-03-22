@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard';
 import Chat from './pages/Chat';
 import Analytics from './pages/Analytics';
 import Profile from './pages/Profile';
+import Admin from './pages/Admin';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
       <Route path="/chat" element={<Chat />} />
       <Route path="/analytics" element={<Analytics />} />
       <Route path="/profile/:id" element={<Profile />} />
+      <Route path="/admin" element={<Admin />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
