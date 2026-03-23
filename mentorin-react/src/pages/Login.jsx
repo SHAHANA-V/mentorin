@@ -47,19 +47,6 @@ const Login = () => {
     }
   };
 
-  // 🔥 LOAD DATA FROM BACKEND
-  const loadAnalytics = () => {
-    fetch(`${API_BASE_URL}/analytics/all`)
-      .then(res => res.json())
-      .then(data => {
-        // Assuming setMentors is defined elsewhere or this is a placeholder
-        // setMentors(data); 
-        console.log("Analytics data:", data); // Log data as setMentors is not defined
-      })
-      .catch(err => {
-        console.error("Analytics error", err);
-      });
-  };
 
   const handleAdminQuickLogin = async (e) => {
     e.preventDefault();
