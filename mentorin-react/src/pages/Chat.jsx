@@ -69,6 +69,8 @@ const Chat = () => {
            throw new Error("API Failure");
         }
         
+        const data = await res.json();
+        
         if (!data.status) {
            throw new Error(`Server returned error: ${res.status}`);
         }
