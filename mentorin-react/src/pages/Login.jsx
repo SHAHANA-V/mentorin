@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import API_BASE_URL from '../apiConfig';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -12,7 +13,7 @@ const Login = () => {
     setError('');
 
     try {
-      const res = await fetch("https://mentorin-backend.onrender.com/login", {
+      const res = await fetch(`${API_BASE_URL}/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -46,12 +47,26 @@ const Login = () => {
     }
   };
 
+  // 🔥 LOAD DATA FROM BACKEND
+  const loadAnalytics = () => {
+    fetch(`${API_BASE_URL}/analytics/all`)
+      .then(res => res.json())
+      .then(data => {
+        // Assuming setMentors is defined elsewhere or this is a placeholder
+        // setMentors(data); 
+        console.log("Analytics data:", data); // Log data as setMentors is not defined
+      })
+      .catch(err => {
+        console.error("Analytics error", err);
+      });
+  };
+
   const handleAdminQuickLogin = async (e) => {
     e.preventDefault();
     setError('');
 
     try {
-      const res = await fetch("https://mentorin-backend.onrender.com/login", {
+      const res = await fetch(`${API_BASE_URL}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: "admin@mentorin.com", password: "admin" })

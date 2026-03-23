@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import API_BASE_URL from '../apiConfig';
 
 const Admin = () => {
   const [activeTab, setActiveTab] = useState('overview');
@@ -25,13 +26,13 @@ const Admin = () => {
       if (tab === 'blocked') filter = 'blocked';
 
       if (tab === 'reports') {
-        const res = await fetch(`https://mentorin-backend.onrender.com/admin/simulation/history`);
+        const res = await fetch(`${API_BASE_URL}/admin/simulation/history`);
         if (!res.ok) throw new Error("API Error");
         setReports(await res.json());
         return;
       }
 
-      const res = await fetch(`https://mentorin-backend.onrender.com/admin/users?type=${filter}`);
+      const res = await fetch(`${API_BASE_URL}/admin/users?type=${filter}`);
       if (!res.ok) throw new Error("Failed connecting to API");
       const data = await res.json();
       setUsers(data);
@@ -49,7 +50,7 @@ const Admin = () => {
 
   const handleAction = async (userId, action) => {
     try {
-      const res = await fetch("https://mentorin-backend.onrender.com/admin/mentor/action", {
+      const res = await fetch(`${API_BASE_URL}/admin/mentor/action`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user_id: userId, action })
@@ -65,7 +66,7 @@ const Admin = () => {
 
   const handleToggleSimulation = async (userId) => {
     try {
-      const res = await fetch("https://mentorin-backend.onrender.com/admin/simulate/toggle", {
+      const res = await fetch(`${API_BASE_URL}/admin/simulate/toggle`, {
         method: "POST", headers: {"Content-Type":"application/json"},
         body: JSON.stringify({ user_id: userId })
       });
@@ -78,7 +79,7 @@ const Admin = () => {
 
   const handleTriggerMessage = async (userId, type) => {
     try {
-      await fetch("https://mentorin-backend.onrender.com/admin/simulate/trigger", {
+      await fetch(`${API_BASE_URL}/admin/simulate/trigger`, {
         method: "POST", headers: {"Content-Type":"application/json"},
         body: JSON.stringify({ user_id: userId, type })
       });

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Layout from '../components/Layout';
+import API_BASE_URL from '../apiConfig';
 
 const Chat = () => {
   const [messages, setMessages] = useState([
@@ -24,7 +25,7 @@ const Chat = () => {
     if (user && user.role === 'mentor') {
       interval = setInterval(async () => {
         try {
-          const res = await fetch(`https://mentorin-backend.onrender.com/chat/mock_sync/${user.id}`);
+          const res = await fetch(`${API_BASE_URL}/chat/mock_sync/${user.id}`);
           if (res.ok) {
             const data = await res.json();
             setIsMockActive(data.mockActive);
@@ -53,7 +54,7 @@ const Chat = () => {
     // 🤖 IF SIMULATION IS ACTIVE, BYPASS NORMAL CHAT LOGIC
     if (isMockActive) {
       try {
-        const res = await fetch("https://mentorin-backend.onrender.com/simulate/reply", {
+        const res = await fetch(`${API_BASE_URL}/simulate/reply`, {
           method: "POST", headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ user_id: user?.id, message: msg })
         });
@@ -68,8 +69,10 @@ const Chat = () => {
            throw new Error("API Failure");
         }
         
-        const data = await res.json();
-
+        if (!data.status) {
+           throw new Error(`Server returned error: ${res.status}`);
+        }
+        
         setMessages(prev => [...prev, { text: msg, type: "sent" }]);
         setInputMessage("");
 
@@ -77,12 +80,12 @@ const Chat = () => {
           setIsMockActive(false);
           setSimulationReport(data.report);
         }
-      } catch (err) { alert("Failed to connect to Simulation Engine"); }
+      } catch (err) { alert(`Simulation Error: ${err.message}`); }
       return;
     }
 
     try {
-      const res = await fetch("https://mentorin-backend.onrender.com/analyze_chat", {
+      const res = await fetch(`${API_BASE_URL}/analyze_chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -127,7 +130,7 @@ const Chat = () => {
       }
 
     } catch (err) {
-      alert("⚠ Message failed or user blocked");
+      alert(`Chat Error: ${err.message || 'Check your internet connection or server status'}`);
     }
   };
 

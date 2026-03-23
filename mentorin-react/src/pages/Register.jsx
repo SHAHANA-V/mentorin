@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import API_BASE_URL from '../apiConfig';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -96,7 +97,7 @@ const Register = () => {
         payload.trustScore = 60; // Default trust score
       }
 
-      const res = await fetch("https://mentorin-backend.onrender.com/register", {
+      const res = await fetch(`${API_BASE_URL}/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import API_BASE_URL from '../apiConfig';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -25,7 +26,7 @@ const Analytics = () => {
 
   // 🔥 LOAD DATA FROM BACKEND
   const loadAnalytics = () => {
-    fetch("https://mentorin-backend.onrender.com/analytics/all")
+    fetch(`${API_BASE_URL}/analytics/all`)
       .then(res => res.json())
       .then(data => {
         setMentors(data);
