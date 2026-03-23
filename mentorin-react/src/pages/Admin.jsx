@@ -25,13 +25,13 @@ const Admin = () => {
       if (tab === 'blocked') filter = 'blocked';
 
       if (tab === 'reports') {
-        const res = await fetch(`http://127.0.0.1:5000/admin/simulation/history`);
+        const res = await fetch(`https://mentorin-backend.onrender.com/admin/simulation/history`);
         if (!res.ok) throw new Error("API Error");
         setReports(await res.json());
         return;
       }
 
-      const res = await fetch(`http://127.0.0.1:5000/admin/users?type=${filter}`);
+      const res = await fetch(`https://mentorin-backend.onrender.com/admin/users?type=${filter}`);
       if (!res.ok) throw new Error("Failed connecting to API");
       const data = await res.json();
       setUsers(data);
@@ -49,7 +49,7 @@ const Admin = () => {
 
   const handleAction = async (userId, action) => {
     try {
-      const res = await fetch("http://127.0.0.1:5000/admin/mentor/action", {
+      const res = await fetch("https://mentorin-backend.onrender.com/admin/mentor/action", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user_id: userId, action })
@@ -65,7 +65,7 @@ const Admin = () => {
 
   const handleToggleSimulation = async (userId) => {
     try {
-      const res = await fetch("http://127.0.0.1:5000/admin/simulate/toggle", {
+      const res = await fetch("https://mentorin-backend.onrender.com/admin/simulate/toggle", {
         method: "POST", headers: {"Content-Type":"application/json"},
         body: JSON.stringify({ user_id: userId })
       });
@@ -78,7 +78,7 @@ const Admin = () => {
 
   const handleTriggerMessage = async (userId, type) => {
     try {
-      await fetch("http://127.0.0.1:5000/admin/simulate/trigger", {
+      await fetch("https://mentorin-backend.onrender.com/admin/simulate/trigger", {
         method: "POST", headers: {"Content-Type":"application/json"},
         body: JSON.stringify({ user_id: userId, type })
       });
@@ -161,35 +161,72 @@ const Admin = () => {
     </div>
   );
 
-  const renderReports = () => (
-    <div className="card admin-table-container">
-      <table className="admin-table">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Mentor Assessed</th>
-            <th>Professionalism</th>
-            <th>Helpfulness</th>
-            <th>Final AI Grade</th>
-          </tr>
-        </thead>
-        <tbody>
-          {reports.map((rep, idx) => (
-            <tr key={idx}>
-              <td>{new Date(rep.timestamp).toLocaleDateString()}</td>
-              <td style={{fontWeight: 'bold', color: '#1e293b'}}>{rep.mentorName}</td>
-              <td style={{color: rep.scores.professionalism >= 7 ? '#16a34a' : '#ef4444', fontWeight: 'bold'}}>{rep.scores.professionalism} / 10</td>
-              <td style={{color: rep.scores.helpfulness >= 7 ? '#16a34a' : '#ef4444', fontWeight: 'bold'}}>{rep.scores.helpfulness} / 10</td>
-              <td><span className={`badge ${rep.scores.finalScore >= 7 ? 'active' : 'blocked'}`}>{rep.scores.finalScore}</span></td>
+  const renderReports = () => {
+    const tierStyle = (tier) => {
+      if (tier === 'Trusted Mentor') return { background: '#dcfce7', color: '#15803d', border: '1px solid #86efac' };
+      if (tier === 'Verified') return { background: '#dbeafe', color: '#1d4ed8', border: '1px solid #93c5fd' };
+      return { background: '#fee2e2', color: '#b91c1c', border: '1px solid #fca5a5' };
+    };
+    const tierIcon = (tier) => tier === 'Trusted Mentor' ? '🟢' : tier === 'Verified' ? '🔵' : '🔴';
+
+    if (reports.length === 0) return (
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '80px 20px', textAlign: 'center' }}>
+        <div style={{ fontSize: '64px', marginBottom: '16px' }}>📋</div>
+        <h3 style={{ color: '#1e293b', margin: '0 0 8px' }}>No Reports Yet</h3>
+        <p style={{ color: '#64748b', maxWidth: '320px' }}>Start a simulation on any active mentor from the <b>All Users</b> tab to generate their performance report here.</p>
+      </div>
+    );
+
+    return (
+      <div className="card admin-table-container">
+        <table className="admin-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Mentor</th>
+              <th>Comm. Quality</th>
+              <th>Response Acc.</th>
+              <th>Engagement</th>
+              <th>Score /100</th>
+              <th>Tier</th>
             </tr>
-          ))}
-          {reports.length === 0 && (
-            <tr><td colSpan="5" style={{textAlign: "center", padding: "20px"}}>No simulation reports generated yet.</td></tr>
-          )}
-        </tbody>
-      </table>
-    </div>
-  );
+          </thead>
+          <tbody>
+            {reports.map((rep, idx) => {
+              const s = rep.scores;
+              const tier = s.verificationTier || (s.finalScore >= 7.6 ? 'Trusted Mentor' : s.finalScore >= 5.1 ? 'Verified' : 'Needs Improvement');
+              const displayScore = s.finalScore > 10 ? s.finalScore : Math.round(s.finalScore * 10);
+              const commQ = s.communicationQuality ?? Math.round(s.professionalism * 10);
+              const respA = s.responseAccuracy ?? Math.round(s.helpfulness * 10);
+              const engL = s.engagementLevel ?? 100;
+              return (
+                <tr key={idx}>
+                  <td style={{ whiteSpace: 'nowrap' }}>{new Date(rep.timestamp).toLocaleDateString()}</td>
+                  <td style={{ fontWeight: 'bold', color: '#1e293b' }}>{rep.mentorName}</td>
+                  <td><b>{commQ}</b><span style={{ color: '#94a3b8', fontSize: '12px' }}>/100</span></td>
+                  <td><b>{respA}</b><span style={{ color: '#94a3b8', fontSize: '12px' }}>/100</span></td>
+                  <td><b>{engL}</b><span style={{ color: '#94a3b8', fontSize: '12px' }}>/100</span></td>
+                  <td>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <div style={{ flex: 1, height: '6px', background: '#e2e8f0', borderRadius: '3px', overflow: 'hidden', minWidth: '60px' }}>
+                        <div style={{ width: `${displayScore}%`, height: '100%', background: displayScore >= 76 ? '#16a34a' : displayScore >= 51 ? '#2563eb' : '#dc2626', transition: 'width 0.5s ease' }} />
+                      </div>
+                      <b style={{ minWidth: '32px' }}>{displayScore}</b>
+                    </div>
+                  </td>
+                  <td>
+                    <span style={{ ...tierStyle(tier), padding: '4px 10px', borderRadius: '20px', fontSize: '12px', fontWeight: '600', whiteSpace: 'nowrap' }}>
+                      {tierIcon(tier)} {tier}
+                    </span>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    );
+  };
 
   return (
     <div className="container" style={{background: "#f1f5f9"}}>

@@ -24,7 +24,7 @@ const Chat = () => {
     if (user && user.role === 'mentor') {
       interval = setInterval(async () => {
         try {
-          const res = await fetch(`http://127.0.0.1:5000/chat/mock_sync/${user.id}`);
+          const res = await fetch(`https://mentorin-backend.onrender.com/chat/mock_sync/${user.id}`);
           if (res.ok) {
             const data = await res.json();
             setIsMockActive(data.mockActive);
@@ -53,7 +53,7 @@ const Chat = () => {
     // 🤖 IF SIMULATION IS ACTIVE, BYPASS NORMAL CHAT LOGIC
     if (isMockActive) {
       try {
-        const res = await fetch("http://127.0.0.1:5000/simulate/reply", {
+        const res = await fetch("https://mentorin-backend.onrender.com/simulate/reply", {
           method: "POST", headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ user_id: user?.id, message: msg })
         });
@@ -82,7 +82,7 @@ const Chat = () => {
     }
 
     try {
-      const res = await fetch("http://127.0.0.1:5000/analyze_chat", {
+      const res = await fetch("https://mentorin-backend.onrender.com/analyze_chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -169,6 +169,54 @@ const Chat = () => {
             <span>Mentor · Data Science</span>
           </div>
         </div>
+
+        <div className="chat-user">
+          <img src="https://i.pravatar.cc/40?img=45" />
+          <div>
+            <h4>Rahul Verma</h4>
+            <span>Mentor · Product</span>
+          </div>
+        </div>
+
+        <div className="chat-user">
+          <img src="https://i.pravatar.cc/40?img=57" />
+          <div>
+            <h4>Priya Patel</h4>
+            <span>Mentor · UX Design</span>
+          </div>
+        </div>
+
+        <div className="chat-user">
+          <img src="https://i.pravatar.cc/40?img=68" />
+          <div>
+            <h4>Arjun Nair</h4>
+            <span>Mentor · DevOps</span>
+          </div>
+        </div>
+
+        <div className="chat-user">
+          <img src="https://i.pravatar.cc/40?img=15" />
+          <div>
+            <h4>Sneha Iyer</h4>
+            <span>Mentor · AI / ML</span>
+          </div>
+        </div>
+
+        <div className="chat-user">
+          <img src="https://i.pravatar.cc/40?img=22" />
+          <div>
+            <h4>Karan Mehta</h4>
+            <span>Mentor · Finance</span>
+          </div>
+        </div>
+
+        <div className="chat-user">
+          <img src="https://i.pravatar.cc/40?img=51" />
+          <div>
+            <h4>Divya Reddy</h4>
+            <span>Mentor · Cybersecurity</span>
+          </div>
+        </div>
       </aside>
 
       {/* RIGHT : CHAT WINDOW */}
@@ -211,33 +259,57 @@ const Chat = () => {
         <div className="chat-input" style={{position: 'relative'}}>
           
           {/* SIMULATION REPORT OVERLAY MODAL */}
-          {simulationReport && (
-            <div className="modal-overlay" style={{position: 'fixed', inset: 0, zIndex: 9999}}>
-              <div className="modal-content fade-in-up" style={{textAlign:'center', background:'white', padding:'40px', borderRadius:'15px', color:'#1e293b'}}>
-                <h2 style={{color: '#3b82f6', marginBottom:'10px'}}>Simulation Completed 🎉</h2>
-                <p style={{color: '#64748b', marginBottom:'25px'}}>The multi-turn AI script has finished. Your responses have been recorded and scored.</p>
-                
-                <div style={{background:'#f8fafc', padding:'20px', borderRadius:'10px', display:'flex', gap:'30px', justifyContent:'center'}}>
-                  <div>
-                    <span style={{fontSize:'32px', fontWeight:'bold', display:'block'}}>{simulationReport.professionalism}/10</span>
-                    <span style={{fontSize:'13px', color:'#64748b', textTransform:'uppercase'}}>Professionalism</span>
+          {simulationReport && (() => {
+            const score = simulationReport.finalScore > 10 ? simulationReport.finalScore : Math.round(simulationReport.finalScore * 10);
+            const tier = simulationReport.verificationTier || (score >= 76 ? 'Trusted Mentor' : score >= 51 ? 'Verified' : 'Needs Improvement');
+            const tierColor = tier === 'Trusted Mentor' ? '#15803d' : tier === 'Verified' ? '#1d4ed8' : '#b91c1c';
+            const tierBg = tier === 'Trusted Mentor' ? '#dcfce7' : tier === 'Verified' ? '#dbeafe' : '#fee2e2';
+            const commQ = simulationReport.communicationQuality ?? Math.round(simulationReport.professionalism * 10);
+            const respA = simulationReport.responseAccuracy ?? Math.round(simulationReport.helpfulness * 10);
+            const engL = simulationReport.engagementLevel ?? 100;
+            return (
+              <div className="modal-overlay" style={{position: 'fixed', inset: 0, zIndex: 9999}}>
+                <div className="modal-content fade-in-up" style={{textAlign:'center', background:'white', padding:'40px', borderRadius:'15px', color:'#1e293b', maxWidth: '460px', width: '90%'}}>
+                  <h2 style={{color: '#3b82f6', marginBottom:'4px'}}>Simulation Completed 🎉</h2>
+                  <p style={{color: '#64748b', marginBottom:'20px', fontSize: '14px'}}>Your responses were recorded and evaluated by the AI examiner.</p>
+
+                  {/* Tier badge */}
+                  <div style={{background: tierBg, color: tierColor, border: `1px solid`, borderRadius: '30px', padding: '8px 20px', display: 'inline-block', fontWeight: '700', fontSize: '15px', marginBottom: '24px'}}>
+                    {tier === 'Trusted Mentor' ? '🟢' : tier === 'Verified' ? '🔵' : '🔴'} {tier}
                   </div>
-                  <div style={{borderLeft:'1px solid #cbd5e1'}}></div>
-                  <div>
-                    <span style={{fontSize:'32px', fontWeight:'bold', display:'block'}}>{simulationReport.helpfulness}/10</span>
-                    <span style={{fontSize:'13px', color:'#64748b', textTransform:'uppercase'}}>Helpfulness</span>
+
+                  {/* Sub-scores grid */}
+                  <div style={{background:'#f8fafc', padding:'16px', borderRadius:'10px', display:'grid', gridTemplateColumns: '1fr 1fr 1fr', gap:'12px', marginBottom:'20px'}}>
+                    <div>
+                      <span style={{fontSize:'22px', fontWeight:'bold', display:'block'}}>{commQ}</span>
+                      <span style={{fontSize:'11px', color:'#64748b', textTransform:'uppercase', letterSpacing:'0.5px'}}>Comm. Quality</span>
+                    </div>
+                    <div style={{borderLeft:'1px solid #e2e8f0', borderRight:'1px solid #e2e8f0'}}>
+                      <span style={{fontSize:'22px', fontWeight:'bold', display:'block'}}>{respA}</span>
+                      <span style={{fontSize:'11px', color:'#64748b', textTransform:'uppercase', letterSpacing:'0.5px'}}>Response Acc.</span>
+                    </div>
+                    <div>
+                      <span style={{fontSize:'22px', fontWeight:'bold', display:'block'}}>{engL}</span>
+                      <span style={{fontSize:'11px', color:'#64748b', textTransform:'uppercase', letterSpacing:'0.5px'}}>Engagement</span>
+                    </div>
                   </div>
+
+                  {/* Score bar */}
+                  <div style={{textAlign:'left', marginBottom:'24px'}}>
+                    <div style={{display:'flex', justifyContent:'space-between', marginBottom:'6px'}}>
+                      <span style={{fontWeight:'600', fontSize:'14px'}}>Overall Score</span>
+                      <b style={{color: tierColor}}>{score} / 100</b>
+                    </div>
+                    <div style={{height:'8px', background:'#e2e8f0', borderRadius:'4px', overflow:'hidden'}}>
+                      <div style={{width:`${score}%`, height:'100%', background: score >= 76 ? '#16a34a' : score >= 51 ? '#2563eb' : '#dc2626', transition:'width 0.8s ease', borderRadius:'4px'}} />
+                    </div>
+                  </div>
+
+                  <button className="btn primary" style={{width:'100%'}} onClick={() => setSimulationReport(null)}>Acknowledge &amp; Return</button>
                 </div>
-                
-                <div style={{marginTop:'30px'}}>
-                  <span style={{fontSize:'16px', fontWeight:'600'}}>Final AI Integrity Score: </span>
-                  <span style={{fontSize:'18px', color: simulationReport.finalScore >= 7 ? '#10b981' : '#f59e0b', fontWeight:'bold'}}>{simulationReport.finalScore} / 10</span>
-                </div>
-                
-                <button className="btn primary" style={{marginTop:'30px', width:'100%'}} onClick={() => setSimulationReport(null)}>Acknowledge & Return</button>
               </div>
-            </div>
-          )}
+            );
+          })()}
 
           <input 
             id="chatInput"

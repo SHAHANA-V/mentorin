@@ -96,7 +96,7 @@ const Register = () => {
         payload.trustScore = 60; // Default trust score
       }
 
-      const res = await fetch("http://127.0.0.1:5000/register", {
+      const res = await fetch("https://mentorin-backend.onrender.com/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

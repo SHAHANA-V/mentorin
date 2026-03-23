@@ -12,7 +12,7 @@ const Login = () => {
     setError('');
 
     try {
-      const res = await fetch("http://127.0.0.1:5000/login", {
+      const res = await fetch("https://mentorin-backend.onrender.com/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -51,7 +51,7 @@ const Login = () => {
     setError('');
 
     try {
-      const res = await fetch("http://127.0.0.1:5000/login", {
+      const res = await fetch("https://mentorin-backend.onrender.com/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: "admin@mentorin.com", password: "admin" })
@@ -121,7 +121,7 @@ const Login = () => {
 
         {/* QUICK ADMIN LOGIN */}
         <button className="btn" style={{background: "#1e3a8a"}} onClick={handleAdminQuickLogin}>
-          Login as Admin (Shortcut)
+          Login as Admin 
         </button>
 
         {/* SWITCH */}

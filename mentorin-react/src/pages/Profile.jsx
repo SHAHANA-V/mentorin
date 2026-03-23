@@ -138,12 +138,14 @@ const Profile = () => {
               <b>{mentor.trustLevel}</b>
             </div>
 
-            <a href="/chat" className="btn" style={{marginTop: "20px"}}>
-              Start Chat
-            </a>
-            <button className="btn" style={{background: "#0ea5e9", marginTop: "10px", width: '100%'}} onClick={handleRequestClick}>
-              Request Mentorship
-            </button>
+            <div style={{ marginTop: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <a href="/chat" className="btn" style={{ width: '100%', textAlign: 'center', display: 'block', boxSizing: 'border-box', background: 'linear-gradient(135deg, #2563eb, #1e40af)', color: 'white', textDecoration: 'none', padding: '12px', borderRadius: '10px', fontWeight: '600', fontSize: '15px', letterSpacing: '0.3px' }}>
+                💬 Start Chat
+              </a>
+              <button className="btn" style={{ background: 'linear-gradient(135deg, #0ea5e9, #0284c7)', color: 'white', width: '100%', padding: '12px', borderRadius: '10px', fontWeight: '600', fontSize: '15px', border: 'none', cursor: 'pointer' }} onClick={handleRequestClick}>
+                🤝 Request Mentorship
+              </button>
+            </div>
           </div>
         </div>
       </main>

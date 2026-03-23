@@ -25,7 +25,7 @@ const Analytics = () => {
 
   // 🔥 LOAD DATA FROM BACKEND
   const loadAnalytics = () => {
-    fetch("http://127.0.0.1:5000/analytics/all")
+    fetch("https://mentorin-backend.onrender.com/analytics/all")
       .then(res => res.json())
       .then(data => {
         setMentors(data);
