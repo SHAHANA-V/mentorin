@@ -48,6 +48,10 @@ const Chat = () => {
   };
 
   const sendMessage = async () => {
+    if (!user || !user.id) {
+       alert("Session Error: Please log out and log in again to refresh your user session.");
+       return;
+    }
     const msg = inputMessage.trim();
     if (!msg) return;
 
@@ -98,16 +102,17 @@ const Chat = () => {
 
       if (!res.ok) {
         if (res.status === 403) {
-          const errData = await res.json();
-          if (errData.status === "blocked") {
-            alert("This mentor has been blocked due to policy violations and sent for admin review.");
-            const blockedUser = { ...user, status: "blocked" };
-            setUser(blockedUser);
-            localStorage.setItem("user", JSON.stringify(blockedUser));
-            return;
-          }
+           const errData = await res.json();
+           if (errData.status === "blocked") {
+             alert("This mentor has been blocked due to policy violations and sent for admin review.");
+             const blockedUser = { ...user, status: "blocked" };
+             setUser(blockedUser);
+             localStorage.setItem("user", JSON.stringify(blockedUser));
+             return;
+           }
         }
-        throw res;
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || `Server Error ${res.status}`);
       }
       
       const data = await res.json();
@@ -132,7 +137,8 @@ const Chat = () => {
       }
 
     } catch (err) {
-      alert(`Chat Error: ${err.message || 'Check your internet connection or server status'}`);
+      console.error("Chat error details:", err);
+      alert(`Chat Error: ${err.message || 'Server error. Check terminal/console for details.'}`);
     }
   };
 
