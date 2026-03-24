@@ -4,6 +4,6 @@ const isProduction = false;
 
 const API_BASE_URL = isProduction 
   ? "https://mentorin-backend.onrender.com" 
-  : "http://127.0.0.1:5000";
+  : "http://localhost:5000";
 
 export default API_BASE_URL;
